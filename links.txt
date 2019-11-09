@@ -1,0 +1,6 @@
+https://rp5.ru/images/ru/logo.png example1.png
+https://avatars.mds.yandex.net/get-pdb/752643/3adb91d0-9a9a-4303-ac19-aff5a8e1d753/s1200?webp=false cat1.jpg
+https://rp5.ru/images/ru/logo.png example3.png
+https://i09.fotocdn.net/s117/5ea0805e38afaa00/user_xl/2668147185.jpg cat2.jpg
+https://avatars.mds.yandex.net/get-pdb/752643/3adb91d0-9a9a-4303-ac19-aff5a8e1d753/s1200?webp=false cat1_copy.jpg
+https://i09.fotocdn.net/s117/5ea0805e38afaa00/user_xl/2668147185.jpg cat2_copy.jpg
