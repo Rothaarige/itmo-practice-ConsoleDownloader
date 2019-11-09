@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ConsoleDownloader:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ConsoleDownloader_jar</output-path>
+    <root id="archive" name="ConsoleDownloader.jar">
+      <element id="module-output" name="ConsoleDownloader" />
+    </root>
+  </artifact>
+</component>

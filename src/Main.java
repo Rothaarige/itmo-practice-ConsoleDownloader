@@ -15,9 +15,9 @@ public class Main {
             "где N - количество одновременно качающих потоков" + System.lineSeparator() +
             "PathFile - путь к файлу со списком ссылок" + System.lineSeparator() +
             "FolderForSave - имя папки, куда складывать скаченные файлы";
-    private static String links;
-    private static String folderForSave;
-    private static int numbersTread;
+    private static String links = "";
+    private static String folderForSave = "";
+    private static int numbersTread = 0;
     private static int countErrorsFiles = 0;
     private static int countDownloadFiles = 0;
     private static int countCopyFiles = 0;
@@ -74,32 +74,30 @@ public class Main {
                     +(time % 60) + " сек");
 
         } catch (RuntimeException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }
 
     private static void checkParameters(String[] args) {
         //Проверка входных данных
-//        if (args.length != 3){
-//            throw new RuntimeException("Введены некорректные данные." + System.lineSeparator() + ERROR_MESSAGE);
-//        }
+        if (args.length != 3) {
+            throw new RuntimeException("Введены некорректные данные." + System.lineSeparator() + ERROR_MESSAGE);
+        }
         //Проверка первого аргумента - количества потоков
         try {
-            numbersTread = Integer.parseInt("2");
-//            int numbersTread = Integer.getInteger(args[0]);
+            numbersTread = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Неверно введено количесвто потоков." + System.lineSeparator() + ERROR_MESSAGE);
         }
         //Проверка второго аргумента - файла с данными
-        links = "links.txt";
-//        String links =args[1];
+        links = args[1];
         if (!Files.exists(Paths.get(links))) {
             throw new RuntimeException("Файл: " + links + " отсутствует." + System.lineSeparator() + ERROR_MESSAGE);
         }
 
         //Проверка третьего аргумента - папки для копирования
-        folderForSave = "files";
-//        String folderForSave =args[2];
+        folderForSave = args[2];
         if (!Files.isDirectory(Paths.get(folderForSave))) {
             try {
                 Files.createDirectories(Paths.get(folderForSave));
@@ -110,5 +108,4 @@ public class Main {
             }
         }
     }
-
 }
