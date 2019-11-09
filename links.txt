@@ -1,6 +1,12 @@
-https://rp5.ru/images/ru/logo.png example1.png
 https://avatars.mds.yandex.net/get-pdb/752643/3adb91d0-9a9a-4303-ac19-aff5a8e1d753/s1200?webp=false cat1.jpg
-https://rp5.ru/images/ru/logo.png example3.png
 https://i09.fotocdn.net/s117/5ea0805e38afaa00/user_xl/2668147185.jpg cat2.jpg
 https://avatars.mds.yandex.net/get-pdb/752643/3adb91d0-9a9a-4303-ac19-aff5a8e1d753/s1200?webp=false cat1_copy.jpg
 https://i09.fotocdn.net/s117/5ea0805e38afaa00/user_xl/2668147185.jpg cat2_copy.jpg
+https://avatars.mds.yandex.net/get-pdb/1340225/dcd87eb5-6af8-483e-8711-a53db73e2d37/s1200 cat3.jpg
+https://pbs.twimg.com/media/BxWZUbWIYAAUBTz.jpg:large cat4.jpg
+https://avatars.mds.yandex.net/get-pdb/1058492/0660d6aa-156b-4c7d-a6e6-6305a114ff88/s1200 cat10.jpg
+https://newsbuzz.ru/wp-content/uploads/2016/11/4.jpg cat5.jpg
+https://avatars.mds.yandex.net/get-pdb/1516664/5a3d0e63-3563-4e10-bb7d-924003c98f9d/s1200 cat6.jpg
+https://images.wallpaperscraft.ru/image/kotenok_dzhinsy_morda_pushistyy_pryatatsya_59694_1920x1200.jpg cat7.jpg
+https://avatars.mds.yandex.net/get-pdb/1789050/0c039738-7b8c-4856-8212-1abd3e675ade/s1200?webp=false cat8.jpg
+https://www.1zoom.me/big2/39/274659-werecat.jpg cat9.jpg
