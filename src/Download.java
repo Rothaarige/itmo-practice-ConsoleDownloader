@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,14 +11,24 @@ import java.util.ArrayList;
 
 public class Download {
 
-    public static void download(String link, ArrayList<String> fileNames, String folderForSave) throws IOException {
+    public static void download(String link, ArrayList<String> fileNames, String folderForSave) {
         LocalDateTime startTime = LocalDateTime.now();
 
         System.out.println("Загружается файл: " + fileNames.get(0));
-        URL website = new URL(link);
+
+        URL website;
+        try {
+            website = new URL(link);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Неверный формат URL:\n" + link +
+                    "\n файл не будет скачан");
+        }
+
         File file = new File(folderForSave + "/" + fileNames.get(0));
         try (InputStream in = website.openStream()) {
             Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при загрузке. " + file + " не был загружен");
         }
 
         System.out.println("Файл: " + fileNames.get(0) + " загружен: " +
@@ -29,9 +40,15 @@ public class Download {
                 System.out.println("Файл: " + fileNames.get(0) + " копируется в: " + fileNames.get(i));
                 startTime = LocalDateTime.now();
 
-                Files.copy(Paths.get(folderForSave + "/" + fileNames.get(0)),
-                        Paths.get(folderForSave + "/" + fileNames.get(i)),
-                        StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.copy(Paths.get(folderForSave + "/" + fileNames.get(0)),
+                            Paths.get(folderForSave + "/" + fileNames.get(i)),
+                            StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    throw new RuntimeException("Ошибка при копировании из " + file +
+                            "\n файл: " + fileNames.get(i) + " не был загружен");
+
+                }
 
                 System.out.println("Файл: " + fileNames.get(i) + " скопирован: " +
                         Utils.getMB(file.length()) + " МБ за " +
