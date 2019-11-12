@@ -1,9 +1,10 @@
+import javafx.util.Pair;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
@@ -27,13 +28,7 @@ public class Main {
         try {
             checkParameters(args);
 
-            Map<String, ArrayList<String>> sourse = Parser.parse(links);
-            ConcurrentLinkedQueue<Para> filesForSave = new ConcurrentLinkedQueue<>();
-            for (Map.Entry<String, ArrayList<String>> entry : sourse.entrySet()) {
-                filesForSave.add(new Para(entry.getKey(), entry.getValue()));
-                countDownloadFiles++;
-                countCopyFiles += entry.getValue().size() - 1;
-            }
+            ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(links);
 
             CountDownLatch latch = new CountDownLatch(numbersTread);
 
@@ -41,10 +36,10 @@ public class Main {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Para pr;
+                        Pair<String, ArrayList<String>> pr;
                         while ((pr = filesForSave.poll()) != null) {
                             try {
-                                Download.download(pr.getLink(), pr.getFileNames(), folderForSave);
+                                new Downloader().download(pr, folderForSave);
                             } catch (RuntimeException e) {
                                 System.out.println(e.getMessage());
                                 countErrorsFiles++;
@@ -74,7 +69,6 @@ public class Main {
                     +(time % 60) + " сек");
 
         } catch (RuntimeException e) {
-            e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }

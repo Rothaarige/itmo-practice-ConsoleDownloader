@@ -1,14 +1,18 @@
+import javafx.util.Pair;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Parser {
 
-    public static Map<String, ArrayList<String>> parse(String nameFile) {
+    public ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> parse(String nameFile) {
         Map<String, ArrayList<String>> fileList = new HashMap<>();
+        ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new ConcurrentLinkedQueue<>();
 
         try (FileReader fr = new FileReader(nameFile);
              BufferedReader bf = new BufferedReader(fr)) {
@@ -23,6 +27,9 @@ public class Parser {
         } catch (IOException e) {
             throw new RuntimeException("Возникли проблемы при чтении файла: " + nameFile);
         }
-        return fileList;
+        for (Map.Entry<String, ArrayList<String>> entry : fileList.entrySet()) {
+            filesForSave.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+        return filesForSave;
     }
 }

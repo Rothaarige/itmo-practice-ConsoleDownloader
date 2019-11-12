@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +11,16 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Download {
+public class Downloader {
+    private int countErrorsDownloadFiles = 0;
+    private int countErrorsCopyFiles = 0;
+    private int countDownloadFiles = 0;
+    private int countCopyFiles = 0;
 
-    public static void download(String link, ArrayList<String> fileNames, String folderForSave) {
+    public void download(Pair<String, ArrayList<String>> pair, String folderForSave) {
+        String link = pair.getKey();
+        ArrayList<String> fileNames = pair.getValue();
+
         LocalDateTime startTime = LocalDateTime.now();
 
         System.out.println("Загружается файл: " + fileNames.get(0) + " потоком " + Thread.currentThread().getName());
