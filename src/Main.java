@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,19 +15,17 @@ public class Main {
             "где N - количество одновременно качающих потоков" + System.lineSeparator() +
             "PathFile - путь к файлу со списком ссылок" + System.lineSeparator() +
             "FolderForSave - имя папки, куда складывать скаченные файлы";
-    private static String links = "";
-    private static String folderForSave = "";
     private static int numbersTread = 0;
     private static int countErrorsFiles = 0;
     private static int countDownloadFiles = 0;
     private static int countCopyFiles = 0;
-    private static LocalDateTime startTime = LocalDateTime.now();
 
     public static void main(String[] args) {
+        LocalDateTime startTime = LocalDateTime.now();
         try {
             checkParameters(args);
 
-            ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(links);
+            ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(args[1]);
 
             CountDownLatch latch = new CountDownLatch(numbersTread);
 
@@ -39,7 +36,7 @@ public class Main {
                         Pair<String, ArrayList<String>> pr;
                         while ((pr = filesForSave.poll()) != null) {
                             try {
-                                new Downloader().download(pr, folderForSave);
+                                new Downloader().download(pr, args[2]);
                             } catch (RuntimeException e) {
                                 System.out.println(e.getMessage());
                                 countErrorsFiles++;
@@ -85,19 +82,17 @@ public class Main {
             throw new RuntimeException("Неверно введено количесвто потоков." + System.lineSeparator() + ERROR_MESSAGE);
         }
         //Проверка второго аргумента - файла с данными
-        links = args[1];
-        if (!Files.exists(Paths.get(links))) {
-            throw new RuntimeException("Файл: " + links + " отсутствует." + System.lineSeparator() + ERROR_MESSAGE);
+        if (!Files.exists(Paths.get(args[1]))) {
+            throw new RuntimeException("Файл: " + args[1] + " отсутствует." + System.lineSeparator() + ERROR_MESSAGE);
         }
 
         //Проверка третьего аргумента - папки для копирования
-        folderForSave = args[2];
-        if (!Files.isDirectory(Paths.get(folderForSave))) {
+        if (!Files.isDirectory(Paths.get(args[2]))) {
             try {
-                Files.createDirectories(Paths.get(folderForSave));
+                Files.createDirectories(Paths.get(args[2]));
             } catch (IOException e) {
                 throw new RuntimeException("Что-то пошло не так при попытке создания папки для сохранения" +
-                        System.lineSeparator() + folderForSave + System.lineSeparator() +
+                        System.lineSeparator() + args[2] + System.lineSeparator() +
                         "Возможно у вас нет прав для создания данного каталога или ошибка в имени пути.");
             }
         }

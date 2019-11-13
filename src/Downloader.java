@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +58,6 @@ public class Downloader {
                 } catch (IOException e) {
                     throw new RuntimeException("Ошибка при копировании из " + file +System.lineSeparator()+
                             " файл: " + fileNames.get(i) + " не был загружен");
-
                 }
 
                 System.out.println("Файл: " + fileNames.get(i) + " скопирован: " +
