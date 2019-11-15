@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,9 +17,6 @@ public class Main {
             "PathFile - путь к файлу со списком ссылок" + System.lineSeparator() +
             "FolderForSave - имя папки, куда складывать скаченные файлы";
     private static int numbersTread = 0;
-    private static int countErrorsFiles = 0;
-    private static int countDownloadFiles = 0;
-    private static int countCopyFiles = 0;
 
     public static void main(String[] args) {
         LocalDateTime startTime = LocalDateTime.now();
@@ -26,6 +24,7 @@ public class Main {
             checkParameters(args);
 
             ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(args[1]);
+            Analyzer analyzer = new Analyzer();
 
             CountDownLatch latch = new CountDownLatch(numbersTread);
 
@@ -36,10 +35,11 @@ public class Main {
                         Pair<String, ArrayList<String>> pr;
                         while ((pr = filesForSave.poll()) != null) {
                             try {
-                                new Downloader().download(pr, args[2]);
+                                Downloader dl = new Downloader();
+                                dl.setAnalyzer(analyzer);
+                                dl.download(pr, args[2]);
                             } catch (RuntimeException e) {
                                 System.out.println(e.getMessage());
-                                countErrorsFiles++;
                             }
                         }
                         System.out.println("Поток " + Thread.currentThread().getName() + " завершил работу");
@@ -53,17 +53,7 @@ public class Main {
                 //ignore
             }
 
-            System.out.println("Загружено файлов: " + countDownloadFiles + System.lineSeparator() +
-                    "Сохранено файлов: " + (countDownloadFiles + countCopyFiles));
-            if (countErrorsFiles > 0) {
-                System.out.println("Были ошибки при загрузке и сохранении файлов в количестве: " +
-                        countErrorsFiles + System.lineSeparator() +
-                        "Данные выше могут быть не верны.");
-            }
-
-            long time = Utils.getDuration(startTime);
-            System.out.println("Время работы программы: " + (time / 60) + " мин " +
-                    +(time % 60) + " сек");
+            analyzer.getResult(Utils.getDuration(startTime));
 
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -85,7 +75,6 @@ public class Main {
         if (!Files.exists(Paths.get(args[1]))) {
             throw new RuntimeException("Файл: " + args[1] + " отсутствует." + System.lineSeparator() + ERROR_MESSAGE);
         }
-
         //Проверка третьего аргумента - папки для копирования
         if (!Files.isDirectory(Paths.get(args[2]))) {
             try {
