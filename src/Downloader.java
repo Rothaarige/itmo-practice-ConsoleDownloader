@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Downloader {
     private Analyzer analyzer;
@@ -19,8 +20,14 @@ public class Downloader {
     }
 
     public void download(Pair<String, ArrayList<String>> pair, String folderForSave) {
+        Objects.requireNonNull(pair, "Параметр Pair yне должен быть null");
+
         String link = pair.getKey();
         ArrayList<String> fileNames = pair.getValue();
+
+        if (link == null || fileNames == null) {
+            throw new NullPointerException("Ссылка для скачивания или имя файла равны null");
+        }
 
         LocalDateTime startTime = LocalDateTime.now();
 
@@ -31,9 +38,7 @@ public class Downloader {
             website = new URL(link);
         } catch (MalformedURLException e) {
             analyzer.onErrors();
-            throw new RuntimeException("Неверный формат URL:" + System.lineSeparator() +
-                    link + System.lineSeparator() +
-                    "файл не будет скачан");
+            throw new RuntimeException(String.format("Неверный формат URL: %n%s%nФайл не будет скачан", link));
         }
 
         File file = new File(folderForSave + File.separator + fileNames.get(0));
@@ -42,12 +47,9 @@ public class Downloader {
             analyzer.onFinish(fileNames.get(0), Utils.getMB(file.length()), Utils.getDuration(startTime));
         } catch (IOException e) {
             analyzer.onErrors();
-            throw new RuntimeException("Ошибка при загрузке. " + System.lineSeparator() +
-                    "Ссылка: " + link + System.lineSeparator() +
-                    "Файл: " + file + " не был загружен");
+            throw new RuntimeException(String.format("Ошибка при загрузке. %nСсылка: %s %nФайл: %s  не был загружен",
+                    link, file));
         }
-
-        analyzer.onFinish(fileNames.get(0), Utils.getMB(file.length()), Utils.getDuration(startTime));
 
         if (fileNames.size() > 1) {
             for (int i = 1; i < fileNames.size(); i++) {
@@ -59,12 +61,12 @@ public class Downloader {
                     Files.copy(file.toPath(),
                             Paths.get(folderForSave + File.separator + fileNames.get(i)),
                             StandardCopyOption.REPLACE_EXISTING);
+                    analyzer.onFinishCopy(fileNames.get(i), Utils.getMB(file.length()), Utils.getDuration(startTime));
                 } catch (IOException e) {
                     analyzer.onErrorsCopy();
-                    throw new RuntimeException("Ошибка при копировании из " + file + System.lineSeparator() +
-                            " файл: " + fileNames.get(i) + " не был загружен");
+                    throw new RuntimeException(String.format("Ошибка при копировании из %s%nфайл: %s не был загружен",
+                            file, fileNames.get(i)));
                 }
-                analyzer.onFinishCopy(fileNames.get(i), Utils.getMB(file.length()), Utils.getDuration(startTime));
             }
         }
     }

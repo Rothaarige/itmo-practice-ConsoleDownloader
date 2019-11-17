@@ -10,27 +10,22 @@ public class Analyzer implements Analyzable {
 
     @Override
     synchronized public void onStart(String fileName) {
-        System.out.println("Загружается файл: " + fileName); // + " потоком " + Thread.currentThread().getName());
+        System.out.printf("Загружается файл: %s %n", fileName); // + " потоком " + Thread.currentThread().getName());
     }
 
     synchronized public void onStartCopy(String fileNameFrom, String fileNameTo) {
-        System.out.println("Файл: " + fileNameFrom + " копируется в: " + fileNameTo);
-        ;
+        System.out.printf("Файл: %s  копируется в: %s %n", fileNameFrom, fileNameTo);
     }
 
     @Override
     synchronized public void onFinish(String fileName, double size, long time) {
-        System.out.println("Файл: " + fileName + " загружен: " +
-                size + " МБ за " +
-                time + " сек");
+        System.out.printf("Файл: %s загружен: %.2f МБ за %d сек %n", fileName, size, time);
         countDownloadFiles++;
-        this.size = size;
+        this.size += size;
     }
 
     synchronized public void onFinishCopy(String fileName, double size, long time) {
-        System.out.println("Файл: " + fileName + " скопирован: " +
-                size + " МБ за " +
-                time + " сек");
+        System.out.printf("Файл: %s  скопирован: %.2f МБ за %d сек %n", fileName, size, time);
         countCopyFiles++;
     }
 
@@ -44,15 +39,13 @@ public class Analyzer implements Analyzable {
     }
 
     public void getResult(long time) {
-        System.out.println("Загружено файлов: " + countDownloadFiles + System.lineSeparator() +
-                "Сохранено файлов: " + (countDownloadFiles + countCopyFiles) + System.lineSeparator() +
-                "Объем скаченных файлов: " + size);
+        System.out.printf("Загружено файлов: %d %nСохранено файлов: %d %nОбъем скаченных файлов: %.2f MB %n",
+                countDownloadFiles, (countDownloadFiles + countCopyFiles), size);
         if (countErrorsDownloadFiles + countErrorsCopyFiles > 0) {
-            System.out.println("Были ошибки при загрузке и сохранении файлов в количестве: " +
-                    (countErrorsDownloadFiles + countErrorsCopyFiles) + System.lineSeparator() +
-                    "Данные выше могут быть не верны.");
+            System.out.printf("Были ошибки при загрузке и сохранении файлов в количестве: %d %nДанные выше могут быть не верны. %n",
+                    (countErrorsDownloadFiles + countErrorsCopyFiles));
         }
-        System.out.println("Время работы программы: " + (time / 60) + " мин " +
-                +(time % 60) + " сек");
+        System.out.printf("Время работы программы: %d мин %d сек %n", (time / 60), (time % 60));
+        System.out.printf("Средняя скорость загрузки: %.2f Mбит/сек%n", size * 8 / time);
     }
 }

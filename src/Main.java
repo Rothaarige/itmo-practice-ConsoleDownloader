@@ -9,21 +9,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
-    private static final String ERROR_MESSAGE = "Данные должны быть вида:" + System.lineSeparator() +
-            "-------------------------" + System.lineSeparator() +
-            "N PathFile FolderForSave" + System.lineSeparator() +
-            "-------------------------" + System.lineSeparator() +
-            "где N - количество одновременно качающих потоков" + System.lineSeparator() +
-            "PathFile - путь к файлу со списком ссылок" + System.lineSeparator() +
-            "FolderForSave - имя папки, куда складывать скаченные файлы";
+    private static final String ERROR_MESSAGE = String.format("Данные должны быть вида:%n" +
+            "-------------------------%n" +
+            "N PathFile FolderForSave%n" +
+            "-------------------------%n" +
+            "где N - количество одновременно качающих потоков%n" +
+            "PathFile - путь к файлу со списком ссылок%n" +
+            "FolderForSave - имя папки, куда складывать скаченные файлы%n");
     private static int numbersTread = 0;
+    private static final int INDEX_NUMBERS_TREAD = 0;
+    private static final int INDEX_PATH_FILE = 1;
+    private static final int INDEX_FOLDER_FOR_SAVE = 2;
+
 
     public static void main(String[] args) {
         LocalDateTime startTime = LocalDateTime.now();
         try {
             checkParameters(args);
 
-            ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(args[1]);
+            ConcurrentLinkedQueue<Pair<String, ArrayList<String>>> filesForSave = new Parser().parse(args[INDEX_PATH_FILE]);
             Analyzer analyzer = new Analyzer();
 
             CountDownLatch latch = new CountDownLatch(numbersTread);
@@ -37,12 +41,12 @@ public class Main {
                             try {
                                 Downloader dl = new Downloader();
                                 dl.setAnalyzer(analyzer);
-                                dl.download(pr, args[2]);
+                                dl.download(pr, args[INDEX_FOLDER_FOR_SAVE]);
                             } catch (RuntimeException e) {
                                 System.out.println(e.getMessage());
                             }
                         }
-                        System.out.println("Поток " + Thread.currentThread().getName() + " завершил работу");
+                        //System.out.println("Поток " + Thread.currentThread().getName() + "завершил работу");
                         latch.countDown();
                     }
                 }).start();
@@ -63,26 +67,25 @@ public class Main {
     private static void checkParameters(String[] args) {
         //Проверка входных данных
         if (args.length != 3) {
-            throw new RuntimeException("Введены некорректные данные." + System.lineSeparator() + ERROR_MESSAGE);
+            throw new RuntimeException(String.format("Введены некорректные данные. %n%s", ERROR_MESSAGE));
         }
         //Проверка первого аргумента - количества потоков
         try {
-            numbersTread = Integer.parseInt(args[0]);
+            numbersTread = Integer.parseInt(args[INDEX_NUMBERS_TREAD]);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Неверно введено количесвто потоков." + System.lineSeparator() + ERROR_MESSAGE);
+            throw new RuntimeException(String.format("Неверно введено количесвто потоков.%n%s", ERROR_MESSAGE));
         }
         //Проверка второго аргумента - файла с данными
-        if (!Files.exists(Paths.get(args[1]))) {
-            throw new RuntimeException("Файл: " + args[1] + " отсутствует." + System.lineSeparator() + ERROR_MESSAGE);
+        if (!Files.exists(Paths.get(args[INDEX_PATH_FILE]))) {
+            throw new RuntimeException(String.format("Файл: %s отсутствует.%n%s", args[INDEX_PATH_FILE], ERROR_MESSAGE));
         }
         //Проверка третьего аргумента - папки для копирования
-        if (!Files.isDirectory(Paths.get(args[2]))) {
+        if (!Files.isDirectory(Paths.get(args[INDEX_FOLDER_FOR_SAVE]))) {
             try {
-                Files.createDirectories(Paths.get(args[2]));
+                Files.createDirectories(Paths.get(args[INDEX_FOLDER_FOR_SAVE]));
             } catch (IOException e) {
-                throw new RuntimeException("Что-то пошло не так при попытке создания папки для сохранения" +
-                        System.lineSeparator() + args[2] + System.lineSeparator() +
-                        "Возможно у вас нет прав для создания данного каталога или ошибка в имени пути.");
+                throw new RuntimeException(String.format("Что-то пошло не так при попытке создания папки для сохранения%n%s%n" +
+                        "Возможно у вас нет прав для создания данного каталога или ошибка в имени пути.", args[INDEX_FOLDER_FOR_SAVE]));
             }
         }
     }
